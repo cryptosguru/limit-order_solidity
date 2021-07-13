@@ -286,7 +286,7 @@ contract LimitOrderProtocol is
         return (makingAmount, takingAmount);
     }
 
-    function _hash(Order memory order) internal view returns(bytes32) {
+    function _hash(Order memory order) private view returns(bytes32) {
         return _hashTypedDataV4(
             keccak256(
                 abi.encode(
@@ -306,7 +306,7 @@ contract LimitOrderProtocol is
         );
     }
 
-    function _hash(OrderRFQ memory order) internal view returns(bytes32) {
+    function _hash(OrderRFQ memory order) private view returns(bytes32) {
         return _hashTypedDataV4(
             keccak256(
                 abi.encode(
@@ -321,7 +321,7 @@ contract LimitOrderProtocol is
         );
     }
 
-    function _validate(bytes memory makerAssetData, bytes memory takerAssetData, bytes memory signature, bytes32 orderHash) internal view {
+    function _validate(bytes memory makerAssetData, bytes memory takerAssetData, bytes memory signature, bytes32 orderHash) private view {
         require(makerAssetData.length >= 100, "LOP: bad makerAssetData.length");
         require(takerAssetData.length >= 100, "LOP: bad takerAssetData.length");
         bytes4 makerSelector = makerAssetData.decodeSelector();
@@ -336,7 +336,7 @@ contract LimitOrderProtocol is
         }
     }
 
-    function _callMakerAssetTransferFrom(address makerAsset, bytes memory makerAssetData, address taker, uint256 makingAmount) internal {
+    function _callMakerAssetTransferFrom(address makerAsset, bytes memory makerAssetData, address taker, uint256 makingAmount) private {
         // Patch receiver or validate private order
         address orderTakerAddress = makerAssetData.decodeAddress(_TO_INDEX);
         if (orderTakerAddress != address(0)) {
@@ -356,7 +356,7 @@ contract LimitOrderProtocol is
         }
     }
 
-    function _callTakerAssetTransferFrom(address takerAsset, bytes memory takerAssetData, uint256 takingAmount) internal {
+    function _callTakerAssetTransferFrom(address takerAsset, bytes memory takerAssetData, uint256 takingAmount) private {
         // Patch spender
         takerAssetData.patchAddress(_FROM_INDEX, msg.sender);
 
@@ -370,7 +370,7 @@ contract LimitOrderProtocol is
         }
     }
 
-    function _callGetMakerAmount(Order memory order, uint256 takerAmount) internal view returns(uint256 makerAmount) {
+    function _callGetMakerAmount(Order memory order, uint256 takerAmount) private view returns(uint256 makerAmount) {
         if (order.getMakerAmount.length == 0 && takerAmount == order.takerAssetData.decodeUint256(_AMOUNT_INDEX)) {
             // On empty order.getMakerAmount calldata only whole fills are allowed
             return order.makerAssetData.decodeUint256(_AMOUNT_INDEX);
@@ -380,7 +380,7 @@ contract LimitOrderProtocol is
         return abi.decode(result, (uint256));
     }
 
-    function _callGetTakerAmount(Order memory order, uint256 makerAmount) internal view returns(uint256 takerAmount) {
+    function _callGetTakerAmount(Order memory order, uint256 makerAmount) private view returns(uint256 takerAmount) {
         if (order.getTakerAmount.length == 0 && makerAmount == order.makerAssetData.decodeUint256(_AMOUNT_INDEX)) {
             // On empty order.getTakerAmount calldata only whole fills are allowed
             return order.takerAssetData.decodeUint256(_AMOUNT_INDEX);
