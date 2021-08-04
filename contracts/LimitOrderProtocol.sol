@@ -263,8 +263,8 @@ contract LimitOrderProtocol is
             else {
                 makingAmount = _callGetMakerAmount(order, takingAmount);
                 if (makingAmount > remainingMakerAmount) {
-                    takingAmount = (takingAmount * remainingMakerAmount) / makingAmount;
                     makingAmount = remainingMakerAmount;
+                    takingAmount = _callGetTakerAmount(order, makingAmount);
                 }
                 require(makingAmount >= thresholdAmount, "LOP: making amount too low");
             }
