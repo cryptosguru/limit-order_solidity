@@ -35,6 +35,7 @@
   },
   "scripts": {
     "test": "hardhat test",
+    "deploy": "hardhat deploy --network",
     "coverage": "hardhat coverage",
     "docify": "node docify.js",
     "lint:js": "eslint .",
